@@ -283,7 +283,7 @@ const PredictionForm: React.FC = () => {
                       onChange={handleChange}
                       required
                       className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
-                      placeholder="Contoh: 12 text-black"
+                      placeholder="Contoh: 12"
                     />
                     <p className="mt-1 text-xs text-gray-500">
                       Jumlah objek bangunan pemukiman

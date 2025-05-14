@@ -20,11 +20,11 @@ const HeroSection: React.FC = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 z-20">
         <div className="md:w-2/3">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            Deteksi Dini Selamatkan <span className="text-red-500">Hutan</span>
+            Deteksi Dini Selamatkan <span className="text-red-500">Kota</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 mb-8">
             Sistem berbasis kecerdasan buatan untuk deteksi dini dan pencegahan
-            kebakaran hutan. Lindungi sumber daya alam kita sebelum terlambat.
+            kebakaran Kota. Lindungi sumber daya alam kita sebelum terlambat.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
