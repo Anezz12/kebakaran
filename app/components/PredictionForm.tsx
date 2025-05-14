@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import Image from 'next/image';
 
 interface FormData {
@@ -35,6 +35,22 @@ const PredictionForm: React.FC = () => {
   const [result, setResult] = useState<PredictionResult>({ label: '' });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Add this effect to handle body scroll locking when modal is open
+  useEffect(() => {
+    if (showModal) {
+      // Prevent scrolling on the background when modal is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable scrolling when modal is closed
+      document.body.style.overflow = 'auto';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showModal]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,10 +125,10 @@ const PredictionForm: React.FC = () => {
 
   // Get appropriate icon based on severity level
   const getIconPath = (): string => {
-    if (result.label === 'Rendah') return '/images/rendah.png';
-    if (result.label === 'Sedang') return '/images/sedang.png';
-    if (result.label === 'Tinggi') return '/images/tinggi.png';
-    return '';
+    if (result.label === 'Rendah') return '/Ringan.png';
+    if (result.label === 'Sedang') return '/Sedang.png';
+    if (result.label === 'Tinggi') return '/Kritis.png';
+    return '/images/default.png';
   };
 
   // Get severity color
@@ -140,7 +156,7 @@ const PredictionForm: React.FC = () => {
   };
 
   return (
-    <div id="prediction-form" className="w-full bg-gray-50 py-16">
+    <div id="prediction-form" className="w-full bg-gray-50 py-16 relative">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white shadow-xl rounded-xl overflow-hidden">
@@ -437,120 +453,130 @@ const PredictionForm: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal popup - Enhanced professional design */}
+      {/* Modal popup - Now with improved backdrop blur */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl max-w-lg w-full relative animate-fadeIn shadow-2xl overflow-hidden">
-            {/* Modal header with color based on severity */}
-            <div
-              className={`${getSeverityBgColor()} px-6 py-4 border-b ${getSeverityBorderColor()}`}
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-black">
-                  Hasil Prediksi
-                </h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-500 hover:text-gray-700 transition duration-300"
-                  aria-label="Close"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
+        <>
+          {/* Backdrop with blur effect */}
+          <div
+            className="fixed inset-0 z-40 backdrop-blur-md bg-black/30"
+            onClick={closeModal}
+          ></div>
 
-            <div className="p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between">
-                {getIconPath() && (
+          {/* Modal content */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="bg-white rounded-xl max-w-lg w-full relative animate-fadeIn shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()} // Prevents closing when clicking on modal content
+            >
+              {/* Modal header with color based on severity */}
+              <div
+                className={`${getSeverityBgColor()} px-6 py-4 border-b ${getSeverityBorderColor()}`}
+              >
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-black">
+                    Hasil Prediksi
+                  </h2>
+                  <button
+                    onClick={closeModal}
+                    className="text-gray-500 hover:text-gray-700 transition duration-300"
+                    aria-label="Close"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex flex-col md:flex-row items-center justify-between">
                   <div className="w-40 h-40 relative mb-6 md:mb-0">
                     <Image
                       src={getIconPath()}
-                      alt="Icon prediksi"
+                      alt={`Ikon tingkat keparahan ${result.label}`}
                       fill
                       style={{ objectFit: 'contain' }}
                     />
                   </div>
-                )}
 
-                <div className="md:ml-6 text-center md:text-left flex-1">
-                  <p className="text-lg text-gray-700 mb-4">
-                    Berdasarkan data yang Anda masukkan, sistem kami memprediksi
-                    tingkat keparahan kebakaran:
-                  </p>
+                  <div className="md:ml-6 text-center md:text-left flex-1">
+                    <p className="text-lg text-gray-700 mb-4">
+                      Berdasarkan data yang Anda masukkan, sistem kami
+                      memprediksi tingkat keparahan kebakaran:
+                    </p>
 
-                  <div
-                    className={`text-4xl font-bold mb-2 ${getSeverityColor()}`}
-                  >
-                    {result.label}
-                  </div>
+                    <div
+                      className={`text-4xl font-bold mb-2 ${getSeverityColor()}`}
+                    >
+                      {result.label}
+                    </div>
 
-                  <div
-                    className={`p-3 ${getSeverityBgColor()} rounded-lg text-sm mb-6`}
-                  >
-                    {result.label === 'Rendah' && (
-                      <p className="text-green-700">
-                        Kebakaran dengan tingkat keparahan rendah masih
-                        memerlukan perhatian segera.
-                      </p>
-                    )}
-                    {result.label === 'Sedang' && (
-                      <p className="text-yellow-700">
-                        Kebakaran dengan tingkat keparahan sedang memerlukan
-                        pengawasan ketat dan penanganan yang tepat.
-                      </p>
-                    )}
-                    {result.label === 'Tinggi' && (
-                      <p className="text-red-700">
-                        Kebakaran dengan tingkat keparahan tinggi sangat
-                        berbahaya dan memerlukan penanganan segera!
-                      </p>
-                    )}
+                    <div
+                      className={`p-3 ${getSeverityBgColor()} rounded-lg text-sm mb-6`}
+                    >
+                      {result.label === 'Rendah' && (
+                        <p className="text-green-700">
+                          Kebakaran dengan tingkat keparahan rendah masih
+                          memerlukan perhatian segera.
+                        </p>
+                      )}
+                      {result.label === 'Sedang' && (
+                        <p className="text-yellow-700">
+                          Kebakaran dengan tingkat keparahan sedang memerlukan
+                          pengawasan ketat dan penanganan yang tepat.
+                        </p>
+                      )}
+                      {result.label === 'Tinggi' && (
+                        <p className="text-red-700">
+                          Kebakaran dengan tingkat keparahan tinggi sangat
+                          berbahaya dan memerlukan penanganan segera!
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex justify-between mt-8 border-t pt-4">
-                <button
-                  onClick={() => {
-                    // Reset form
-                    setFormData({
-                      luas_area_kejadian: '',
-                      jumlah_sdm: '',
-                      jumlah_unit: '',
-                      jumlah_jiwa: '',
-                      objek_bp: '',
-                      jumlah_kk: '',
-                      objek_bup: '',
-                      objek_bi: '',
-                    });
-                    closeModal();
-                  }}
-                  className="bg-gray-100 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-200 transition-colors duration-300 font-medium"
-                >
-                  Mulai Baru
-                </button>
+                <div className="flex justify-between mt-8 border-t pt-4">
+                  <button
+                    onClick={() => {
+                      // Reset form
+                      setFormData({
+                        luas_area_kejadian: '',
+                        jumlah_sdm: '',
+                        jumlah_unit: '',
+                        jumlah_jiwa: '',
+                        objek_bp: '',
+                        jumlah_kk: '',
+                        objek_bup: '',
+                        objek_bi: '',
+                      });
+                      closeModal();
+                    }}
+                    className="bg-gray-100 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-200 transition-colors duration-300 font-medium"
+                  >
+                    Mulai Baru
+                  </button>
 
-                <button
-                  onClick={closeModal}
-                  className="bg-red-700 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors duration-300 font-medium"
-                >
-                  Tutup
-                </button>
+                  <button
+                    onClick={closeModal}
+                    className="bg-red-700 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors duration-300 font-medium"
+                  >
+                    Tutup
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
